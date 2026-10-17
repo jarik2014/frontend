@@ -57,7 +57,7 @@ bun run test:coverage       # Vitest with the coverage thresholds CI enforces
 bun run test:e2e            # Playwright end-to-end tests (dev server)
 bun run test:e2e:production # Playwright against a production build with CSP enforced
 bun run test:e2e:chain      # Playwright against a local Stellar network (see below)
-bun run typecheck:coverage  # fails on any `any` in src/ (local only, not in CI)
+bun run typecheck:coverage  # fails on any `any` in src/
 bun run bundle:check        # bundle budgets against .next/ (run after build)
 bun run start               # serve the production build
 ```
