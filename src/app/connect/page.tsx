@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Connect } from '../../screens/Connect'
+import { isMainnet } from '../../config/network'
 import { useWallet } from '../../wallet/WalletProvider'
 
 /**
@@ -44,10 +45,15 @@ function ConnectRoute() {
         didConnectRef.current = true
         void connect()
       }}
-      onNew={() => {
-        didConnectRef.current = true
-        connectDemo()
-      }}
+      showDemo={!isMainnet}
+      onNew={
+        isMainnet
+          ? undefined
+          : () => {
+              didConnectRef.current = true
+              connectDemo()
+            }
+      }
       onCancel={() => router.push('/explore')}
     />
   )

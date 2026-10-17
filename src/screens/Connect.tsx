@@ -12,12 +12,15 @@ import { useWallet } from '../wallet/WalletProvider'
  */
 export interface ConnectProps {
   onWallet: () => void
-  onNew: () => void
+  /** Demo / email path. Omitted on mainnet, where the demo wallet must not be offered. */
+  onNew?: () => void
   onCancel: () => void
   onBiometric?: () => void
+  /** Set false to hide the demo door even when `onNew` is wired (mainnet build). */
+  showDemo?: boolean
 }
 
-export function Connect({ onWallet, onNew, onCancel, onBiometric }: ConnectProps) {
+export function Connect({ onWallet, onNew, onCancel, onBiometric, showDemo = true }: ConnectProps) {
   const t = useTranslations('Connect')
   const { connectionError, connecting, syncing, retry } = useWallet()
   const isSyncing = connecting || syncing
@@ -133,14 +136,16 @@ export function Connect({ onWallet, onNew, onCancel, onBiometric }: ConnectProps
           loading={isSyncing}
           chips={['Freighter', 'xBull', 'Albedo', 'Lobstr']}
         />
-        <Door
-          title={t('newTitle')}
-          body={t('newBody')}
-          cta={t('newCta')}
-          variant="primary"
-          onClick={onNew}
-          chips={['Email', 'Passkey', t('addFunds')]}
-        />
+        {showDemo && onNew && (
+          <Door
+            title={t('newTitle')}
+            body={t('newBody')}
+            cta={t('newCta')}
+            variant="primary"
+            onClick={onNew}
+            chips={['Email', 'Passkey', t('addFunds')]}
+          />
+        )}
       </div>
 
       {onBiometric && (

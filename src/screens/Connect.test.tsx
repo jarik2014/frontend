@@ -28,6 +28,21 @@ describe('Connect screen - Wallet syncing indicator (#473)', () => {
     expect(screen.getByRole('button', { name: /connect wallet/i })).toBeInTheDocument()
   })
 
+  it('offers the demo (email) door by default', () => {
+    render(<Connect onWallet={vi.fn()} onNew={vi.fn()} onCancel={vi.fn()} />)
+
+    expect(screen.getByRole('button', { name: /start with email/i })).toBeInTheDocument()
+  })
+
+  it('hides the demo door when showDemo is false (mainnet)', () => {
+    render(
+      <Connect onWallet={vi.fn()} onNew={vi.fn()} onCancel={vi.fn()} showDemo={false} />,
+    )
+
+    expect(screen.queryByRole('button', { name: /start with email/i })).toBeNull()
+    expect(screen.getByRole('button', { name: /connect wallet/i })).toBeInTheDocument()
+  })
+
   it('displays syncing indicator and loading state when syncing with Stellar', () => {
     mockWallet.connecting = true
     mockWallet.syncing = true

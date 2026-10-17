@@ -13,6 +13,13 @@ let walletConnected: boolean
 const connect = vi.fn()
 const connectDemo = vi.fn()
 
+const netState = vi.hoisted(() => ({ isMainnet: false }))
+vi.mock('../../config/network', () => ({
+  get isMainnet() {
+    return netState.isMainnet
+  },
+}))
+
 vi.mock('../../wallet/WalletProvider', () => ({
   useWallet: () => ({ connected: walletConnected, connect, connectDemo }),
 }))
@@ -22,14 +29,16 @@ vi.mock('../../screens/Connect', () => ({
     onWallet,
     onNew,
     onCancel,
+    showDemo = true,
   }: {
     onWallet: () => void
-    onNew: () => void
+    onNew?: () => void
     onCancel: () => void
+    showDemo?: boolean
   }) => (
     <div>
       <button onClick={onWallet}>connect wallet</button>
-      <button onClick={onNew}>start with email</button>
+      {showDemo && onNew ? <button onClick={onNew}>start with email</button> : null}
       <button onClick={onCancel}>keep exploring</button>
     </div>
   ),
@@ -42,6 +51,7 @@ describe('ConnectPage', () => {
     vi.clearAllMocks()
     mockSearch = ''
     walletConnected = false
+    netState.isMainnet = false
   })
 
   it('lets a returning (restored-session) user stay on the Connect screen', () => {
@@ -62,6 +72,21 @@ describe('ConnectPage', () => {
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith('/deposit')
     })
+  })
+
+  it('does not offer the demo wallet on mainnet (#788)', () => {
+    netState.isMainnet = true
+    render(<ConnectPage />)
+
+    expect(screen.getByText('connect wallet')).toBeInTheDocument()
+    expect(screen.queryByText('start with email')).toBeNull()
+  })
+
+  it('keeps the demo wallet on testnet (#788)', () => {
+    netState.isMainnet = false
+    render(<ConnectPage />)
+
+    expect(screen.getByText('start with email')).toBeInTheDocument()
   })
 
   it('honours the return target when a guard sent the visitor here', async () => {
