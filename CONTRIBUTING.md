@@ -62,8 +62,13 @@ bun run bundle:check        # bundle budgets against .next/ (run after build)
 bun run start               # serve the production build
 ```
 
-Only `build`, `test:coverage` and `start` are used by CI; the rest are the
-checks you run locally before you open a PR.
+The CI runs the following jobs:
+| Job | Commands |
+|-----|----------|
+| quality | `bun run typecheck`, `bun run lint`, `bun run format:check` |
+| test | `bun run test:coverage` |
+| build | `bun run build`, `bun run bundle:check` |
+| e2e | `bunx playwright test` |
 
 ## Testing
 
